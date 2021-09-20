@@ -3,10 +3,38 @@
 import dgl
 # networkx helps in visualizing the graph
 import networkx as nx
-
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
 
 # FUNCTIONS
+def draw(i, probs, ax, nx_G):
+    r"""
+    Parameters
+    ----------
+    :param i: the epoch
+    :param probs: probability array
+    :param ax: axis to draw
+    :param nx_G: input network graph
+    :return:
+    ax: updated graph
+    """
+    cls1color = '#00FFFF'
+    cls2color = '#FF00FF'
+    pos = {}
+    colors = []
+    # 34 number of nodes
+    for v in range(34):
+        pos[v] = probs[i][v]#.numpy()
+        cls = pos[v].argmax()
+        colors.append(cls1color if cls else cls2color)
+    ax.cla()
+    ax.axis('off')
+    ax.set_title('Epoch: %d' % i)
+    nx.draw_networkx(nx_G.to_undirected(), pos, node_color=colors,
+            with_labels=True, node_size=300, ax=ax)
+    return ax
+
 def build_karate_club_graph():
     r""" This function builds up the network in the karate club
     Parameters
@@ -71,6 +99,6 @@ def visualize_karate_club():
     plt.show()
 
 
-
+# LOCAL
 if __name__ == '__main__':
     visualize_karate_club()

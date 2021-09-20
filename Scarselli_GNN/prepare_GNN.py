@@ -27,6 +27,7 @@ def from_EN_to_GNN(E, N):
     feat = np.reshape(feat_temp, [len(E), -1]) # reshape to have n_archs x 2*label_dim  => 78x68
     # create the input for gnn [ source node, destination node, features source, features destination]
     inp = np.concatenate((E[:, :2], feat), axis=1)
+
     # create the arcnode matrix,
     # the indices are the position within the matrix we want to have values of 1
     # np.stack(blabla) we have E[:,0] which is the source node, np.arange(len(E)) is from 0 to 78
@@ -38,6 +39,7 @@ def from_EN_to_GNN(E, N):
                            dense_shape=[len(N), len(E)]
                            )
     # then graphnode
+    # THIS IS VALID ONLY IF YOUR GRAPH AS A WHOLE HAS A LABEL - not th ecase for karate
     num_graphs = int(max(N_full[:, -1]) + 1)
     # get all graph_ids
     g_ids = N_full[:, -1] # this is 0

@@ -14,6 +14,7 @@ class Net:
         state_dim: this is up to the user, default 2
         output_dim: the output must be the same as the labels, in our case 4
         """
+        print("Initialize the net functions")
         # define an epsilon variable for the iteration procedure
         self.EPSILON = 0.00000001
         # input & output
@@ -38,7 +39,7 @@ class Net:
         ----------
         inp: self.input_dim
         """
-
+        print("Define the nn for fw")
         with tf.compat.v1.variable_scope('State_net'):
             # tanh activation function, 2 dense layers
             layer1 = tf.compat.v1.layers.dense(inp, self.state_l1, activation=tf.nn.tanh)
@@ -53,6 +54,7 @@ class Net:
         ----------
         inp: self.input_dim
         """
+        print("Define the nn for gw")
         with tf.compat.v1.variable_scope('Output_net'):
             layer1 = tf.compat.v1.layers.dense(inp, self.output_l1, activation=tf.nn.tanh)
             layer2 = tf.compat.v1.layers.dense(layer1, self.output_l2, activation=tf.nn.softmax)
@@ -62,20 +64,27 @@ class Net:
     def Loss(self, output, target, output_weight=None, mask=None):
         r""" loss function for the neural network structure
         """
-        # TODO CHECK
+        print("Initialize the loss function")
         # method to define the loss function
+        # which is the max between the epsilon threshold and the current output from state
         output = tf.maximum(output, self.EPSILON, name="Avoiding_explosions")  # to avoid explosions
+        # sum to the current state target*log(output)
         xent = -tf.reduce_sum(target * tf.math.log(output), 1)
-
+        # apply only to the current mask
         mask = tf.cast(mask, dtype=tf.float32)
+        # normalize the mask values
         mask /= tf.reduce_mean(mask)
+        # compute the x state
         xent *= mask
+        # loss
         lo = tf.reduce_mean(xent)
+
         return lo
 
     def Metric(self, target, output, output_weight=None, mask=None):
+        r""" Here compute the accuracy of predictions for current state"""
         # method to define the evaluation metric
-
+        print("Initialize metric for functions")
         correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(target, 1))
         accuracy_all = tf.cast(correct_prediction, tf.float32)
         mask = tf.cast(mask, dtype=tf.float32)

@@ -17,7 +17,7 @@ def preprocess():
 
     Parameters
     ----------
-
+    classes: int, the number of classes based on the labels. This can be 2 or 4
     Return
     ------
     E: np.array, edges array, last column is graph index (0)
@@ -32,7 +32,7 @@ def preprocess():
     # create a one-hot encoding sparse matrix for features
     features = sp.eye(np.max(edges+1), dtype=np.float32).tocsr()
     # extract labels for each node
-    idx_labels = np.loadtxt("data/labels.txt", dtype=np.int32)
+    idx_labels = np.loadtxt("data/two_labels.txt", dtype=np.int32)
     idx_labels = idx_labels[idx_labels[:,0].argsort()]
     labels = np.eye(max(idx_labels[:,1])+1, dtype=np.int32)[idx_labels[:,1]] # one-hot encoding of labels
 
@@ -44,15 +44,12 @@ def preprocess():
     mask_train = np.zeros(shape=(34,), dtype=np.float32)
     idx_classes = np.argmax(labels, axis=1)
 
+    # this is hard coded
     id_0, id_4, id_5, id_12 = random.choices(np.argwhere(idx_classes == 0), k=4)
     id_1, id_6, id_7, id_13 = random.choices(np.argwhere(idx_classes == 1), k=4)
-    id_2, id_8, id_9, id_14 = random.choices(np.argwhere(idx_classes == 2), k=4)
-    id_3, id_10, id_11, id_15 = random.choices(np.argwhere(idx_classes == 3), k=4)
 
     mask_train[id_0] = 1.  # class 1
     mask_train[id_1] = 1.  # class 2
-    mask_train[id_2] = 1.  # class 0
-    mask_train[id_3] = 1.  # class 3
     mask_test = 1. - mask_train
 
     return E, N, labels, mask_train, mask_test

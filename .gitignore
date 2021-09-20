@@ -1,3 +1,7 @@
 */venv
 */tmp
 */*.png
+*/imgs/
+*/final_gif.gif
+.idea
+*/.idea

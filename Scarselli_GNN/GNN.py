@@ -21,6 +21,7 @@ class GNN:
         """
         Constructor
         Initialize all the elements of the graph neural networks
+
         Parameters
         -----------
         net: Net instance - it contains state network, output network, initialized weights, loss function and metric;
@@ -40,13 +41,19 @@ class GNN:
 
         np.random.seed(0)
         tf.random.set_seed(0)
+        print("Tensorboard ", tensorboard)
         self.tensorboard = tensorboard
+        print("Max iteration number ", max_it)
         self.max_iter = max_it
         self.net = net
         self.optimizer = optimizer(learning_rate, name="optim")
+        print("Threshold ", threshold)
         self.state_threshold = threshold
+        print("input dimension ", input_dim)
         self.input_dim = input_dim
+        print("output dimension ", output_dim)
         self.output_dim = output_dim
+        print("state dimension ", state_dim)
         self.state_dim = state_dim
         self.graph_based = graph_based
         self.mask_flag = mask_flag
@@ -66,7 +73,6 @@ class GNN:
 
     def VariableState(self):
         r""" This function define placeholders for input, target, state, old_state and arcnode"""
-        '''Define placeholders for input, output, state, state_old, arch-node conversion matrix'''
 
         # placeholder for input and output
         self.comp_inp = tf.compat.v1.placeholder(tf.float32, shape=(None, self.input_dim), name="input")
@@ -110,7 +116,7 @@ class GNN:
                 self.summ_loss = tf.compat.v1.summary.scalar('loss', self.loss, collections=['train'])
                 self.summ_val_loss = tf.compat.v1.summary.scalar('val_loss', self.val_loss, collections=['val'])
 
-        # optimizer
+        # optimizer --> backprop step
         with tf.compat.v1.variable_scope('train'):
             self.grads = self.optimizer.compute_gradients(self.loss)
             self.train_op = self.optimizer.apply_gradients(self.grads, name='train_op')
@@ -166,7 +172,7 @@ class GNN:
         with tf.compat.v1.variable_scope('condition'):
             # evaluate distance by state(t) and state(t-1)
             outDistance = tf.sqrt(tf.reduce_sum(tf.square(tf.subtract(state, old_state)), 1) + 0.00000000001)
-            # vector showing item converged or not (given a certain threshold)
+            # vector showing item converged or not (given a certain threshold) --> contraction map concept here
             checkDistanceVec = tf.greater(outDistance, self.state_threshold)
 
             c1 = tf.reduce_any(checkDistanceVec)
@@ -176,6 +182,19 @@ class GNN:
 
 
     def Loop(self):
+        r""" Loop function is the core of the run
+        Here the condition and convergence are checked for each new state
+        Once the tf.while_loop has reached convergence:
+        - if we need a graph_based prediction we multiply the NodeGraph (archnode matrix form prepare_GNN) with
+        the current state
+        - otherwise we keep the current state
+        and then we feed this in the GW MLP function
+
+        Return
+        -------
+        out: array: current predictions
+        num: iteration number
+        stf: current nodes' state"""
         # call to loop for the state computation and compute the output
         # compute state
         with tf.compat.v1.variable_scope('Loop'):
@@ -196,14 +215,19 @@ class GNN:
                 stf = tf.sparse_tensor_dense_matmul(self.NodeGraph, st)
             else:
                 stf = st
-            # mulitply the ouptu of the new state with the output network in each node
+            # mulitply the ouput of the new state with the output network in each node
             out = self.net.netOut(stf)
 
-        return out, num, stf
+        return out, num, stf, res
 
     def Train(self, inputs, ArcNode, target, step, nodegraph=0.0, mask=None):
         ''' train methods: has to receive the inputs, arch-node matrix conversion, target,
-        and optionally nodegraph indicator '''
+        and optionally nodegraph indicator
+
+        Return
+        ------
+        loss: current loss
+        loop: 3D matrix: loop[0] current prediction, loop[1] current state, loop[2] number of iterations'''
 
         # Creating a SparseTensor with the feeded ArcNode Matrix
         arcnode_ = tf.compat.v1.SparseTensorValue(indices=ArcNode.indices, values=ArcNode.values,
@@ -242,19 +266,18 @@ class GNN:
             # loss is current loss
             # loop returns the predictions proba for labels
             # e/g/ node[0] = [0.00, 0.00, 0.9, 0.00]
-            #print("loss ", loss)
-            #print("loop ", loop)
 
             if step % 100 == 0:
                 self.writer.add_summary(merge_all, step)
                 self.writer.add_summary(merge_tr, step)
         else:
-            _, loss, loop, stf = self.session.run(
+            _, loss, loop = self.session.run(
                 [self.train_op, self.loss, self.loss_op],
                 feed_dict=fd)
 
         # loop[1] return the number of iteration for reaching convergence
         # loop[2] return the new state of the node which reflect the predictions
+
         return loss, loop
 
     def Validate(self, inptVal, arcnodeVal, targetVal, step, nodegraph=0.0, mask=None):
@@ -301,7 +324,6 @@ class GNN:
                 [self.val_loss, self.loss_op, self.metrics], feed_dict=fd_val)
 
         # return loss, accuracy and number of iteration
-
         return loss_val, metr, loop[1]
 
 

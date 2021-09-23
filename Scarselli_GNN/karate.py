@@ -24,9 +24,9 @@ state_dim = 2
 input_dim = inp.shape[1]
 output_dim = labels.shape[1]
 max_it = 20 # max number of iterations
-num_epoch = 100
+num_epoch = 300
 optimizer = tf.compat.v1.train.AdamOptimizer
-tensorboard = True
+tensorboard = False
 savegif = 1
 # initialize state and output network
 net = net.Net(input_dim, state_dim, output_dim)
@@ -70,6 +70,7 @@ for j in range(0, num_epoch):
         fig.savefig(img_name, dpi=300, bbox_inches='tight',)
     if count % 100 == 0:
         print("Epoch ", count)
+        print(loop_val)
         print("Training: ", g.Validate(inp, arcnode, labels, count, mask=mask_train))
 
         #print("Test: ", g.Validate(inp, arcnode, labels, count, mask=mask_test))

@@ -4,20 +4,23 @@ import dgl
 # networkx helps in visualizing the graph
 import networkx as nx
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
+import seaborn as sns
+sns.set_theme(style="whitegrid")
 
 # FUNCTIONS
 def draw(i, probs, ax, nx_G):
-    r"""
+    r""" Function to draw the nodes' state after each epoch
+
     Parameters
     ----------
-    :param i: the epoch
-    :param probs: probability array
-    :param ax: axis to draw
-    :param nx_G: input network graph
-    :return:
-    ax: updated graph
+    i: int, number of epoch
+    probs: np.array, array of nodes' state after each epoch
+    ax: matplotlib.pyplot.subplots(), axes for drawing
+    nx_G: networkx, current karate graph, nodes and edges
+
+    Return
+    -------
+    ax: update graph
     """
     cls1color = '#00FFFF'
     cls2color = '#FF00FF'

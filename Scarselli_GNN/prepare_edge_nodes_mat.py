@@ -30,16 +30,34 @@ def preprocess():
     edges = np.loadtxt("data/edges.txt", dtype=np.int32) -1 # -1 as it's 0 index based
     edges = edges[np.lexsort((edges[:,1], edges[:,0]))] # reorder the edges
     # create a one-hot encoding sparse matrix for features
-    features = sp.eye(np.max(edges+1), dtype=np.float32).tocsr()
+    features = sp.eye(np.max(edges+1), dtype=np.float32).tocsr() # here we fix the pairs and their indexes
+    print("Features")
+    print(features)
+    # for example features as one-hot encoding
+    #(0, 0) 1.0
+    #(1, 1) 1.0
+    #(2, 2) 1.0
+    #(3, 3) 1.0
+    #(4, 4) 1.0
+    #(5, 5) 1.0
+    #(6, 6) 1.0
+    #(7, 7) 1.0
+
     # extract labels for each node
     idx_labels = np.loadtxt("data/two_labels.txt", dtype=np.int32)
     idx_labels = idx_labels[idx_labels[:,0].argsort()]
     labels = np.eye(max(idx_labels[:,1])+1, dtype=np.int32)[idx_labels[:,1]] # one-hot encoding of labels
-
+    print("Labels")
+    print(labels)
+    print("Creation of matrix E")
     # create edges matrix + graph id
     E = np.concatenate((edges, np.zeros((len(edges), 1), dtype=np.int32)), axis=1)
+    print(E)
     # create the nodes' feature matrix + graph id
+    print("Creation of matrix N")
     N = np.concatenate((features.toarray(), np.zeros((features.shape[0], 1), dtype=np.int32)), axis=1)
+    print(N)
+
     # create mask train and mask test
     mask_train = np.zeros(shape=(34,), dtype=np.float32)
     idx_classes = np.argmax(labels, axis=1)

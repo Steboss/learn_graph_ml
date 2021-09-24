@@ -173,8 +173,17 @@ class GNN:
             k = k + 1
         return a, state, old_state, k
 
+
     def condition(self, a, state, old_state, k):
-        r""" This function check whether the new state is a fixed-point"""
+        r""" This function check whether the new state is a fixed-point
+
+        Parameters
+        ----------
+        a: input matrix
+        state: newly computed state or randomly assigned state
+        old_state: current nodes' state
+        k: iteration number
+        """
         # evaluate condition on the convergence of the state
         with tf.compat.v1.variable_scope('condition'):
             # evaluate distance by state(t) and state(t-1)
@@ -201,7 +210,9 @@ class GNN:
         -------
         out: array: current predictions
         num: iteration number
-        stf: current nodes' state"""
+        stf: current nodes' state
+        res: input matrix
+        """
         # call to loop for the state computation and compute the output
         # compute state
         with tf.compat.v1.variable_scope('Loop'):
@@ -228,13 +239,14 @@ class GNN:
         return out, num, stf, res
 
     def Train(self, inputs, ArcNode, target, step, nodegraph=0.0, mask=None):
-        ''' train methods: has to receive the inputs, arch-node matrix conversion, target,
+        r""" train methods: has to receive the inputs, arch-node matrix conversion, target,
         and optionally nodegraph indicator
 
         Return
         ------
         loss: current loss
-        loop: 3D matrix: loop[0] current prediction, loop[1] current state, loop[2] number of iterations'''
+        loop: 3D matrix: loop[0] current prediction, loop[1] current state, loop[2] number of iterations
+        """
 
         # Creating a SparseTensor with the feeded ArcNode Matrix
         arcnode_ = tf.compat.v1.SparseTensorValue(indices=ArcNode.indices, values=ArcNode.values,

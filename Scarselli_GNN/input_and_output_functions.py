@@ -1,6 +1,5 @@
-# here we are defining the funciton fw and gw as neural networks
+# here we are defining the function fw and gw as neural networks
 import tensorflow as tf
-import numpy as np
 
 
 class Net:
@@ -8,10 +7,11 @@ class Net:
 
     def __init__(self, input_dim, state_dim, output_dim):
         r"""Constructor
+
         Parameters
         ----------
         input_dim: input dimension of the graph, in our case is 70
-        state_dim: this is up to the user, default 2
+        state_dim: this is 2 in this case, as we are predicting 1/0 labels
         output_dim: the output must be the same as the labels, in our case 4
         """
         print("Initialize the net functions")
@@ -23,7 +23,7 @@ class Net:
         self.output_dim = output_dim
         self.state_input = self.input_dim - 1 + state_dim  # removing the id_ dimension
 
-        ####  These values are exactly the same as in the official repo,
+
         # you have to play a bit with this number to find the right value
         self.state_l1 = 3
         self.state_l2 = self.state_dim
@@ -75,6 +75,13 @@ class Net:
 
     def Loss(self, output, target, output_weight=None, mask=None):
         r""" loss function for the neural network structure
+
+        Parameters
+        ----------
+        output: current prediction from the gw function
+        target: real label for the nodes
+        output_weight: None, used only if we have weights
+        mask: None, supervised nodes
         """
         print("Initialize the loss function")
         # method to define the loss function
@@ -94,7 +101,15 @@ class Net:
         return lo
 
     def Metric(self, target, output, output_weight=None, mask=None):
-        r""" Here compute the accuracy of predictions for current state"""
+        r""" Here compute the accuracy of predictions for current state
+
+        Parameters
+        ----------
+        target: real label for the nodes
+        output: current prediction from the gw function
+        output_weight: None, used only if we have weights
+        mask: None, supervised nodes
+        """
         # method to define the evaluation metric
         print("Initialize metric for functions")
         correct_prediction = tf.equal(tf.argmax(output, 1), tf.argmax(target, 1))

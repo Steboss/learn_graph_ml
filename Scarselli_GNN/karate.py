@@ -18,16 +18,16 @@ E, N, labels, mask_train, mask_test = preprocess()
 inp, arcnode, graphnode = from_EN_to_GNN(E, N)
 
 # set input and output dim, the maximum number of iterations, the number of epochs and the optimizer
-threshold = 0.001
+threshold = 0.0001
 learning_rate = 0.001
 state_dim = 2
 input_dim = inp.shape[1]
 output_dim = labels.shape[1]
 max_it = 20 # max number of iterations
-num_epoch = 300
+num_epoch = 200
 optimizer = tf.compat.v1.train.AdamOptimizer
 tensorboard = False
-savegif = 0
+savegif = 1
 # initialize state and output network
 net = net.Net(input_dim, state_dim, output_dim)
 # define the name of the experiment, so it can be visualized in tensorboard

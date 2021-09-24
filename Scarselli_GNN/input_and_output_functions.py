@@ -25,10 +25,10 @@ class Net:
 
         ####  These values are exactly the same as in the official repo,
         # you have to play a bit with this number to find the right value
-        self.state_l1 = 5
+        self.state_l1 = 3
         self.state_l2 = self.state_dim
 
-        self.output_l1 = 5
+        self.output_l1 = 3
         self.output_l2 = self.output_dim
 
 

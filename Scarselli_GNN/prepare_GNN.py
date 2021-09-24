@@ -4,6 +4,7 @@ import scipy.sparse as sp
 from collections import namedtuple
 SparseMatrix = namedtuple("SparseMatrix", "indices values dense_shape")
 
+
 def from_EN_to_GNN(E, N):
     r""" This function converts the nodes and features matrices to a Graph Neural Network structure
     From this function we want to retur:
@@ -48,6 +49,9 @@ def from_EN_to_GNN(E, N):
                            )
     print("shape ", len(N), len(E))
     print(arcnode)
+    print("Current state")
+    curr_state = np.zeros((arcnode.dense_shape[0], 2))
+    print(curr_state)
     # then graphnode
     # THIS IS VALID ONLY IF YOUR GRAPH AS A WHOLE HAS A LABEL - not th ecase for karate
     num_graphs = int(max(N_full[:, -1]) + 1)

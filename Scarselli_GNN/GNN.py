@@ -145,12 +145,19 @@ class GNN:
     def convergence(self, a, state, old_state, k):
         r""" This is a very important function as it establish if we have reached the
         convergence of the iterative procedure
+
+        Parameters
+        ----------
+        a: input matrix
+        state: newly computed state or randomly assigned state
+        old_state: current nodes' state
+        k: iteration number
         """
         with tf.compat.v1.variable_scope('Convergence'):
             # body of the while cycle used to iteratively calculate state
 
             # assign current state to old state
-            old_state = state # line 218 define state
+            old_state = state
             # grab states of neighboring node a[:,1] is the input matrix and [:,1] takes all the destination nodes
             gat = tf.gather(old_state, tf.cast(a[:, 1], tf.int32))
             # slice to consider only label of the node and that of its neighbor

@@ -34,10 +34,16 @@ class Net:
 
     def netSt(self, inp):
         r""" Define the state function fw
-        this is a Dense neural network, with input_dim number of nodes
+        The inp matrix, features, is processed initially. state_l1 is fixed to 5,
+        state_l2 is equal to state dimension, which is 2
+
         Parameters
         ----------
-        inp: self.input_dim
+        inp: self.input_dim, dimension edges x (edges+source_features+destination_features)
+
+        Return
+        ------
+        layer2: tf.compat.v1.layers.dense output of second layer
         """
         print("Define the nn for fw")
         with tf.compat.v1.variable_scope('State_net'):
@@ -49,10 +55,16 @@ class Net:
 
     def netOut(self, inp):
         r""" Define the output function gw
-        same as fw, two dense neural networks with input_dim number of nodes
+        The input dimensions are 2, as they come from netSt output. output_l1 is set to 5,
+        output_l2 is the number of labels which is 2
+
         Parameters
         ----------
         inp: self.input_dim
+
+        Return
+        -------
+        layer2: tf.compat.v1.layers.dense: output_l2 dimension array with prediction for each node
         """
         print("Define the nn for gw")
         with tf.compat.v1.variable_scope('Output_net'):

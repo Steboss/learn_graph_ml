@@ -215,7 +215,7 @@ class GNN:
                 stf = tf.sparse_tensor_dense_matmul(self.NodeGraph, st)
             else:
                 stf = st
-            # mulitply the ouput of the new state with the output network in each node
+            # multiply the output of the new state with the output network in each node
             out = self.net.netOut(stf)
 
         return out, num, stf, res
@@ -338,7 +338,9 @@ class GNN:
                                         dense_shape=nodegraph.dense_shape)
 
 
-        fd = {self.NodeGraph: nodegraph, self.comp_inp: inputs, self.state: np.zeros((ArcNode.dense_shape[0], self.state_dim)),
+        fd = {self.NodeGraph: nodegraph,
+              self.comp_inp: inputs,
+              self.state: np.zeros((ArcNode.dense_shape[0], self.state_dim)),
               self.state_old: np.ones((ArcNode.dense_shape[0], self.state_dim)),
               self.ArcNode: arcnode_, self.y: target}
         _ = self.session.run([self.init_l])

@@ -27,7 +27,7 @@ max_it = 20 # max number of iterations
 num_epoch = 300
 optimizer = tf.compat.v1.train.AdamOptimizer
 tensorboard = False
-savegif = 1
+savegif = 0
 # initialize state and output network
 net = net.Net(input_dim, state_dim, output_dim)
 # define the name of the experiment, so it can be visualized in tensorboard
